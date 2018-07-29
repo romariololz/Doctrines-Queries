@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * CategoryRepository
@@ -18,9 +19,9 @@ class CategoryRepository extends EntityRepository
         //$query = $this->getEntityManager()->createQuery($dql);
 
         $qb = $this->createQueryBuilder('cat')
-            ->leftJoin('cat.fortuneCookies', 'fc')
-            ->addSelect('fc')
             ->addOrderBy('cat.name', 'DESC');
+
+        $this->addFortuneCookieJoinAndSelect($qb);
 
         $query = $qb->getQuery();
 
@@ -29,25 +30,33 @@ class CategoryRepository extends EntityRepository
 
     public function search($term)
     {
-        return $this->createQueryBuilder('cat')
-            ->leftJoin('cat.fortuneCookies', 'fc')
-            ->addSelect('fc')
+        $qb = $this->createQueryBuilder('cat')
             ->andWhere('cat.name LIKE :searchTerm
                 OR cat.iconKey LIKE :searchTerm
                 OR fc.fortune LIKE :searchTerm')
-            ->setParameter('searchTerm', '%'.$term.'%')
-            ->getQuery()
+            ->setParameter('searchTerm', '%'.$term.'%');
+
+        $this->addFortuneCookieJoinAndSelect($qb);
+
+        return $qb->getQuery()
             ->execute();
     }
 
     public function findWithFortunesJoin($id)
     {
-        return $this->createQueryBuilder('cat')
+        $qb = $this->createQueryBuilder('cat')
             ->andWhere('cat.id = :id')
-            ->leftJoin('cat.fortuneCookies', 'fc')
-            ->addSelect('fc')
-            ->setParameter('id', $id)
-            ->getQuery()
+            ->setParameter('id', $id);
+
+        $this->addFortuneCookieJoinAndSelect($qb);
+
+        return $qb->getQuery()
             ->getOneOrNullResult();
+    }
+
+    private function addFortuneCookieJoinAndSelect(QueryBuilder $qb)
+    {
+        return $qb->leftJoin('cat.fortuneCookies', 'fc')
+            ->addSelect('fc');
     }
 }
