@@ -6,6 +6,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\Entity\Category;
 use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ORM\EntityManager;
 
 class FortuneController extends Controller
 {
