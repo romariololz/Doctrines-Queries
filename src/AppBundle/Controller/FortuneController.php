@@ -17,9 +17,9 @@ class FortuneController extends Controller
             ->getManager()
             ->getRepository('AppBundle:Category');
 
-        $categories = $categoryRepository->findAll();
+        $categories = $categoryRepository->findAllOrdered();
 
-        return $this->render('fortune/homepage.html.twig',[
+        return $this->render('fortune/homepage.html.twig', [
             'categories' => $categories
         ]);
     }
